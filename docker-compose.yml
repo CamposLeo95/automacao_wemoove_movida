@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  automacao:
+    container_name: automacao_localiza
+    build: .
+    ports:
+      - "4000:4000"
+    networks:
+      - automacao
+      - rabbit_net
+
+networks:
+  automacao:
+    driver: bridge
+  rabbit_net:
+    external: true
