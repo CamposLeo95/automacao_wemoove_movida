@@ -150,9 +150,7 @@ async getStatus() {
     approved_movida: handleStatusMapper(status_reserva ?? "") || "",
   };
 
-  console.log(`✅ Enviando status para a API: ${handleStatusMapper(status_reserva ?? "")}`);
-
-  // await sendMessageToAPI(clientSendToAPI);
+  await sendMessageToAPI(clientSendToAPI);
 }
 
 

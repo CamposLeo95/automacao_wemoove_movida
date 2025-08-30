@@ -42,6 +42,7 @@ export async function receivedMessageAPI(wsEndpoint: string) {
 
             channel.ack(msg); 
           } catch (err) {
+            channel.ack(msg); 
             console.error("❌ Erro ao processar cliente em Movida:", err);
           }
         }
