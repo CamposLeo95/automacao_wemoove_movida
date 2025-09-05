@@ -16,11 +16,25 @@ export class Connection {
 	
 			const pages = await this.browser.pages();
 			this.page = pages.length ? pages[0] : await this.browser.newPage();
-	
+			console.log("Conexao aberta!")
 			return this.page;
 			
 		} catch (error) {
 			console.error("❌ Erro ao conectar ao Puppeteer:", error);
+		}
+	}
+
+	async disconnect() {
+		try {
+			if (this.page && !this.page.isClosed()) {
+				await this.page.close();
+			}
+			if (this.browser) {
+				await this.browser.disconnect();
+			}
+			console.log("🔒Conexao fechada!")
+		} catch (error) {
+			console.error("❌ Erro ao desconectar Puppeteer:", error);
 		}
 	}
 }
