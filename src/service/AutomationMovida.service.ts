@@ -1,10 +1,9 @@
+import { setTimeout } from "node:timers/promises";
 import type { Page } from "puppeteer";
 import type { Client } from "../domain/entities/client.entity";
-import { setTimeout } from "node:timers/promises";
 import { clientSendToAPIDTO } from "../dtos/clients.dto";
 import { sendMessageToAPI } from "../queues/RabbitMQ/send/send-msg-api.queues";
 import { handleStatusMapper } from "../utils/handleStatusMapper";
-import { writeFileSync } from "node:fs";
 const URL_MOVIDA_STATUS = process.env.URL_MOVIDA_STATUS as string;
 const AMBIENTE = Boolean(+(process.env.TEST as string)) ;
 

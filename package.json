@@ -15,17 +15,18 @@
 	"license": "ISC",
 	"type": "commonjs",
 	"devDependencies": {
+		"@types/amqplib": "^0.10.7",
 		"@types/nodemailer": "^6.4.17",
 		"ts-node": "^10.9.2",
 		"ts-node-dev": "^2.0.0",
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
-		"@types/amqplib": "^0.10.7",
 		"@types/dotenv": "^6.1.1",
 		"@types/express": "^5.0.0",
 		"@types/puppeteer": "^5.4.7",
-		"amqplib": "^0.10.5",
+		"amqp-connection-manager": "^4.1.14",
+		"amqplib": "^0.10.9",
 		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
 		"nodemailer": "^7.0.3",

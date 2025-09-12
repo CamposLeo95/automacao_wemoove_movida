@@ -1,36 +1,48 @@
-import amqp from "amqplib";
+import { connect, ChannelWrapper } from "amqp-connection-manager";
+import { ConfirmChannel } from "amqplib";
 import { formatDateHour } from "../../../utils/formatter";
 import { clientSendToAPIDTO } from "../../../dtos/clients.dto";
 
-
-const AMQP_URL = process.env.AMQP_URL;
+const AMQP_URL = process.env.AMQP_URL!;
 const QUEUE = "response_to_api";
-const dataHora = new Date();
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export async function sendMessageToAPI(client: clientSendToAPIDTO) {
-	if (!AMQP_URL) {
-		return;
-	}
-	try {
-		const connection = await amqp.connect(`${AMQP_URL}?heartbeat=30`);
-		const channel = await connection.createChannel();
-		const message = JSON.stringify(client);
-		await channel.assertQueue(AMQP_URL, { durable: true });
+// conexão única com retry automático
+const connection = connect([`${AMQP_URL}?heartbeat=30`]);
 
-		channel.sendToQueue(QUEUE, Buffer.from(message));
+connection.on("connect", () =>
+  console.log("✅ Conectado ao RabbitMQ (Publisher API)")
+);
+connection.on("disconnect", (err) =>
+  console.error("⚠️ Desconectado. Tentando reconectar...", err?.err?.message)
+);
 
-		console.info(
-			`✅ ${formatDateHour(dataHora)} - Retorno da automação enviado para a API com sucesso!`,
-		);
+// canal persistente
+const channelWrapper: ChannelWrapper = connection.createChannel({
+  json: true,
+  setup: async (channel: ConfirmChannel) => {
+    await channel.assertQueue(QUEUE, { durable: true });
+  },
+});
 
-		setTimeout(() => {
-			connection.close();
-		}, 500);
-		
-	} catch (error) {
-		console.error(
-			`❌ ${formatDateHour(dataHora)} - Retorno da automação enviado para a API com erro: ${error}`
-		);
-	}
+export async function sendMessageToAPI(client: clientSendToAPIDTO): Promise<void> {
+  const dataHora = new Date();
+
+  try {
+
+    await channelWrapper.sendToQueue(QUEUE, client, {
+      persistent: true,
+    });
+
+    console.info(
+      `✅ ${formatDateHour(
+        dataHora
+      )} - Retorno da automação enviado para a API com sucesso!`
+    );
+  } catch (error) {
+    console.error(
+      `❌ ${formatDateHour(
+        dataHora
+      )} - Erro ao enviar retorno da automação: ${error}`
+    );
+  }
 }
