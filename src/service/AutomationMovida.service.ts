@@ -38,14 +38,11 @@ export class AutomationMovida {
 			}
 			await setTimeout(5000); 
 			await inputName.type(this.client.getName());
-
 			const inputCpf = await this.page.waitForSelector("input[name=cpf]");
 			if (!inputCpf) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputCpf.type(this.client.getCpf());
-
-
 			const inputPhone = await this.page.waitForSelector("input[name=phone]");
 			if (!inputPhone) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
@@ -57,25 +54,17 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputEmail.type("assinatura321@gmail.com");
-
 			await this.page.$eval('p.clickVendedor', el => (el as HTMLElement).click());
-
 			await this.page.type('#VendedorID', saleCode);
-
 			const buttonSend = await this.page.waitForSelector('#btnSend');
 			if (!buttonSend) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await buttonSend.evaluate(el => el.scrollIntoView({ block: 'center' }));
 			await buttonSend.click();
-
-
 			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
-
 			await setTimeout(20000)
-
 			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
-			console.log(text)
 			if (text.includes('Erro ao enviar contato')) {
 				await setTimeout(5000)
 				console.log("Erro 1")
@@ -94,18 +83,15 @@ export class AutomationMovida {
 			await this.getStatus()
 			console.log("➡️ Retornando para solicitacao")
 			await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
-			return 
-
+			return
 		} catch (error) {
-				console.log("Erro 2")
+			console.log("Erro 2")
 			const clientSendToAPI: clientSendToAPIDTO = {
 					client_id: this.client.getId(),
 					approved_movida: "Bloqueado",
 				};
 			await sendMessageToAPI(clientSendToAPI);
-
 		}
-			
 	}
 
 	async insertToken() {
@@ -125,35 +111,26 @@ export class AutomationMovida {
 async getStatus() {
   await setTimeout(10000);
   await this.insertToken();
-
   await this.page.goto(`${URL_MOVIDA_STATUS}/relatorios/pedidos`, { 
     waitUntil: 'networkidle2',
     timeout: 60_000
   });
-
 	await setTimeout(30000);
-
 	const { data_criacao, status_reserva, clienteOnSite } = await this.page.evaluate(() => {
 		const table = document.querySelector("movida-table")?.shadowRoot;
 		if (!table) return { data_criacao: null, status_reserva: null, clienteOnSite: null };
 		const getText = (sel: string) =>
 			table.querySelector(sel)?.textContent?.trim() || null;
-
 		return {
 			data_criacao: getText("tbody.table__body tr:nth-child(1) td:nth-child(2)"),
 			status_reserva: getText("tbody.table__body tr:nth-child(1) td:nth-child(4)"),
 			clienteOnSite: getText("tbody.table__body tr:nth-child(1) td:nth-child(13)")
 		};
 	});
-
   const clientSendToAPI: clientSendToAPIDTO = {
     client_id: this.client.getId(),
     approved_movida: handleStatusMapper(status_reserva ?? "") || "",
   };
-
-  await sendMessageToAPI(clientSendToAPI);
-}
-
-
-
+		await sendMessageToAPI(clientSendToAPI);
+	}
 }

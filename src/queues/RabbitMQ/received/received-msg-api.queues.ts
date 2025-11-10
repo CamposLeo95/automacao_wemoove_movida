@@ -22,6 +22,7 @@ export async function receivedMessageAPI() {
   connection.on("connect", () =>
     console.log("✅ Conectado ao RabbitMQ (Movida Consumer)")
   );
+  
   connection.on("disconnect", (err) =>
     console.error("⚠️ Desconectado. Tentando reconectar...", err?.err?.message)
   );
