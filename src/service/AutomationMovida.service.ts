@@ -54,8 +54,33 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputEmail.type("assinatura321@gmail.com");
-			await this.page.$eval('p.clickVendedor', el => (el as HTMLElement).click());
+
+			await this.page.select('#lp-cpa-region-select', '549');
+
+			await this.page.click('#lp-cpa-vehicle-trigger');
+
+			await this.page.waitForSelector('#lp-cpa-vehicle-filter', {
+				visible: true
+			});
+
+			await this.page.type('#lp-cpa-vehicle-filter', 'Polo Track');
+
+			await this.page.waitForSelector(
+				'.lp-cpa-vehicle-option',
+				{ visible: true }
+			);
+
+			await setTimeout(3000);
+
+			await this.page.click('.lp-cpa-vehicle-option');
+
+			await this.page.$eval(
+				'p.clickVendedor',
+				el => (el as HTMLElement).click()
+			);
+
 			await this.page.type('#VendedorID', saleCode);
+
 			const buttonSend = await this.page.waitForSelector('#btnSend');
 			if (!buttonSend) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");

@@ -1,6 +1,9 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 const AMBIENTE_TEST = Boolean(+(process.env.AMBIENTE_TEST as string)) ;
 const WS_DEV = process.env.WS_DEV as string;
+
+console.log("AMBIENTE_TEST:", AMBIENTE_TEST);
+console.log("WS_DEV:", WS_DEV);
 export class Connection {
   private browser!: Browser;
   private page!: Page;
