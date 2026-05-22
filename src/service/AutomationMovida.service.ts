@@ -63,7 +63,7 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputEmail.type("assinatura321@gmail.com");
-			console.log("cpf preenchido: 31999999999")
+			console.log("email preenchido: assinatura321@gmail.com")
 			await this.page.screenshot({
 				path: '/tmp/02-home.png',
 				fullPage: true

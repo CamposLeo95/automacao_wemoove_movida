@@ -7,7 +7,7 @@ puppeteer.use(StealthPlugin());
 export class StartBrowser {
   static async launchBrowser(): Promise<Browser> {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: [
         "--no-sandbox",
