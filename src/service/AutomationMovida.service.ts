@@ -30,7 +30,6 @@ export class AutomationMovida {
 
 	async execute() {
 		try {
-			await this.page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
 			await this.page.setViewport({ width: 1280, height: 2000 });
 			await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
 			const inputName = await this.page.waitForSelector("input[name=name]");
@@ -38,23 +37,23 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await setTimeout(5000); 
-			await inputName.type(this.client.getName(), { delay: 100 });
+			await inputName.type(this.client.getName());
 			const inputCpf = await this.page.waitForSelector("input[name=cpf]");
 			if (!inputCpf) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
-			await inputCpf.type(this.client.getCpf(), { delay: 100 });
+			await inputCpf.type(this.client.getCpf());
 			const inputPhone = await this.page.waitForSelector("input[name=phone]");
 			if (!inputPhone) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
-			await inputPhone.type("31999999999", { delay: 100 });
+			await inputPhone.type("31999999999");
 
 			const inputEmail = await this.page.waitForSelector("input[name=email]");
 			if (!inputEmail) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
-			await inputEmail.type("assinatura321@gmail.com", { delay: 100 });
+			await inputEmail.type("assinatura321@gmail.com");
 
 			await this.page.select('#lp-cpa-region-select', '549');
 
