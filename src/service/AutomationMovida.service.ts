@@ -90,6 +90,7 @@ export class AutomationMovida {
 			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
 			await setTimeout(20000)
 			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
+			console.log("Texto retorno: ", text)
 			if (text.includes('Erro ao enviar contato')) {
 				await setTimeout(5000)
 				console.log("Erro 1")
