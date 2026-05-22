@@ -15,7 +15,6 @@ export class StartBrowser {
         "--disable-dev-shm-usage",
         "--disable-blink-features=AutomationControlled",
         "--window-size=1280,2000",
-        '--proxy-server=http://200.174.198.32:8888'
       ],
       timeout: 60000,
     });
@@ -24,6 +23,10 @@ export class StartBrowser {
     await Promise.all(pages.map(p => p.close()));
 
     const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+await page.evaluateOnNewDocument(() => {
+  Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+});
 
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
