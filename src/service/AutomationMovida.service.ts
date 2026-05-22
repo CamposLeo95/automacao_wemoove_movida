@@ -32,6 +32,10 @@ export class AutomationMovida {
 		try {
 			await this.page.setViewport({ width: 1280, height: 2000 });
 			await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
+			await this.page.screenshot({
+				path: '/tmp/01-home.png',
+				fullPage: true
+			});
 			const inputName = await this.page.waitForSelector("input[name=name]");
 			if (!inputName) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
@@ -55,6 +59,11 @@ export class AutomationMovida {
 			}
 			await inputEmail.type("assinatura321@gmail.com");
 
+			await this.page.screenshot({
+				path: '/tmp/02-home.png',
+				fullPage: true
+			});
+
 			await this.page.select('#lp-cpa-region-select', '549');
 
 			await this.page.click('#lp-cpa-vehicle-trigger');
@@ -71,6 +80,11 @@ export class AutomationMovida {
 			);
 
 			await setTimeout(3000);
+
+			await this.page.screenshot({
+  			path: '/tmp/03-home.png',
+				fullPage: true
+			});
 
 			await this.page.click('.lp-cpa-vehicle-option');
 
@@ -90,6 +104,11 @@ export class AutomationMovida {
 			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
 			await setTimeout(20000)
 			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
+
+			await this.page.screenshot({
+				path: '/tmp/04-home.png',
+				fullPage: true
+			});
 			console.log("Texto retorno: ", text)
 			if (text.includes('Erro ao enviar contato')) {
 				await setTimeout(5000)
