@@ -15,6 +15,7 @@ export class StartBrowser {
         "--disable-dev-shm-usage",
         "--disable-blink-features=AutomationControlled",
         "--window-size=1280,2000",
+        '--proxy-server=http://200.174.198.32:8888'
       ],
       timeout: 60000,
     });
