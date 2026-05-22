@@ -1,6 +1,11 @@
-import puppeteer, { Browser, Page } from "puppeteer";
+import { Browser, Page } from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 const AMBIENTE_TEST = Boolean(+(process.env.AMBIENTE_TEST as string)) ;
 const WS_DEV = process.env.WS_DEV as string;
+
+
+puppeteer.use(StealthPlugin());
 
 export class Connection {
   private browser!: Browser;
