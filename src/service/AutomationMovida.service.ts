@@ -40,25 +40,30 @@ export class AutomationMovida {
 			if (!inputName) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
-			await setTimeout(5000); 
+
+
 			await inputName.type(this.client.getName());
+			console.log("nome preenchido: ",this.client.getName())
+			await setTimeout(5000); 
 			const inputCpf = await this.page.waitForSelector("input[name=cpf]");
 			if (!inputCpf) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputCpf.type(this.client.getCpf());
+			console.log("cpf preenchido: ",this.client.getCpf())
 			const inputPhone = await this.page.waitForSelector("input[name=phone]");
 			if (!inputPhone) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputPhone.type("31999999999");
-
+			console.log("numero preenchido: 31999999999")
 			const inputEmail = await this.page.waitForSelector("input[name=email]");
+
 			if (!inputEmail) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await inputEmail.type("assinatura321@gmail.com");
-
+			console.log("cpf preenchido: 31999999999")
 			await this.page.screenshot({
 				path: '/tmp/02-home.png',
 				fullPage: true
@@ -94,6 +99,7 @@ export class AutomationMovida {
 			);
 
 			await this.page.type('#VendedorID', saleCode);
+			console.log("VendedorID preenchido: ", saleCode)
 
 			const buttonSend = await this.page.waitForSelector('#btnSend');
 			if (!buttonSend) {
@@ -101,6 +107,7 @@ export class AutomationMovida {
 			}
 			await buttonSend.evaluate(el => el.scrollIntoView({ block: 'center' }));
 			await buttonSend.click();
+			console.log("Botao clicado ")
 			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
 			await setTimeout(20000)
 			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
