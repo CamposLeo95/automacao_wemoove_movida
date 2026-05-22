@@ -7,9 +7,10 @@ puppeteer.use(StealthPlugin());
 export class StartBrowser {
   static async launchBrowser(): Promise<Browser> {
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: [
+        `--proxy-server=http://38.154.203.95:5863`,
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -23,6 +24,10 @@ export class StartBrowser {
     await Promise.all(pages.map(p => p.close()));
 
     const page = await browser.newPage();
+    await page.authenticate({
+      username: 'mbthzeix',
+      password: 'ux43nlwari80'
+    });
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 await page.evaluateOnNewDocument(() => {
   Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
