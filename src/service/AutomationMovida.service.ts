@@ -32,10 +32,7 @@ export class AutomationMovida {
 		try {
 			await this.page.setViewport({ width: 1280, height: 2000 });
 			await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
-			await this.page.screenshot({
-				path: '/tmp/01-home.png',
-				fullPage: true
-			});
+
 			const inputName = await this.page.waitForSelector("input[name=name]");
 			if (!inputName) {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
@@ -64,10 +61,6 @@ export class AutomationMovida {
 			}
 			await inputEmail.type("assinatura321@gmail.com");
 			console.log("email preenchido: assinatura321@gmail.com")
-			await this.page.screenshot({
-				path: '/tmp/02-home.png',
-				fullPage: true
-			});
 
 			await this.page.select('#lp-cpa-region-select', '549');
 
@@ -85,11 +78,6 @@ export class AutomationMovida {
 			);
 
 			await setTimeout(3000);
-
-			await this.page.screenshot({
-  			path: '/tmp/03-home.png',
-				fullPage: true
-			});
 
 			await this.page.click('.lp-cpa-vehicle-option');
 
@@ -112,23 +100,19 @@ export class AutomationMovida {
 			await setTimeout(20000)
 			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
 
-			await this.page.screenshot({
-				path: '/tmp/04-home.png',
-				fullPage: true
-			});
 			console.log("Texto retorno: ", text)
-			if (text.includes('Erro ao enviar contato')) {
-				await setTimeout(5000)
-				console.log("Erro 1")
-				const clientSendToAPI: clientSendToAPIDTO = {
-					client_id: this.client.getId(),
-					approved_movida: "Bloqueado",
-				};
-				await sendMessageToAPI(clientSendToAPI);
-				console.log('❌ Erro detectado');
-				await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
-				return
-			} 
+			// if (text.includes('Erro ao enviar contato')) {
+			// 	await setTimeout(5000)
+			// 	console.log("Erro 1")
+			// 	const clientSendToAPI: clientSendToAPIDTO = {
+			// 		client_id: this.client.getId(),
+			// 		approved_movida: "Bloqueado",
+			// 	};
+			// 	await sendMessageToAPI(clientSendToAPI);
+			// 	console.log('❌ Erro detectado');
+			// 	await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
+			// 	return
+			// } 
 			console.log("🔄️ Fazendo a solicitacao...")
 			await setTimeout(120000)
 			console.log("➡️ Navegando para relatorios...")
@@ -168,21 +152,43 @@ async getStatus() {
     timeout: 60_000
   });
 	await setTimeout(30000);
-	const { data_criacao, status_reserva, clienteOnSite } = await this.page.evaluate(() => {
+	const clientRows = await this.page.evaluate(() => {
 		const table = document.querySelector("movida-table")?.shadowRoot;
-		if (!table) return { data_criacao: null, status_reserva: null, clienteOnSite: null };
-		const getText = (sel: string) =>
-			table.querySelector(sel)?.textContent?.trim() || null;
-		return {
-			data_criacao: getText("tbody.table__body tr:nth-child(1) td:nth-child(2)"),
-			status_reserva: getText("tbody.table__body tr:nth-child(1) td:nth-child(4)"),
-			clienteOnSite: getText("tbody.table__body tr:nth-child(1) td:nth-child(13)")
-		};
+		if (!table) return [];
+		const getText = (row: number, col: number) =>
+			table.querySelector(`tbody.table__body tr:nth-child(${row}) td:nth-child(${col})`)
+				?.textContent?.trim() || null;
+		return [1, 2, 3].map(row => ({
+			data_criacao:   getText(row, 2),
+			status_reserva: getText(row, 4),
+			clienteOnSite:  getText(row, 13)
+		}));
 	});
-  const clientSendToAPI: clientSendToAPIDTO = {
-    client_id: this.client.getId(),
-    approved_movida: handleStatusMapper(status_reserva ?? "") || "",
-  };
-		await sendMessageToAPI(clientSendToAPI);
+
+	console.log("Linhas lidas:", clientRows.map(r => r.clienteOnSite));
+
+	const matchedRow = clientRows.find(
+		row => row.clienteOnSite === this.client.getName()
+	);
+
+	let clientSendToAPI: clientSendToAPIDTO;
+
+	if (matchedRow) {
+		const approved_movida = handleStatusMapper(matchedRow.status_reserva ?? "") || "";
+		console.log(`✅ Cliente encontrado na tabela: ${matchedRow.clienteOnSite}`);
+		console.log(`📋 Status: ${approved_movida}`);
+		clientSendToAPI = {
+			client_id: this.client.getId(),
+			approved_movida
+		};
+	} else {
+		console.log(`❌ Cliente "${this.client.getName()}" não encontrado nas 3 primeiras linhas`);
+		clientSendToAPI = {
+			client_id: this.client.getId(),
+			approved_movida: "Bloqueado"
+		};
+	}
+
+	await sendMessageToAPI(clientSendToAPI);
 	}
 }

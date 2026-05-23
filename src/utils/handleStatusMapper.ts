@@ -5,5 +5,5 @@ export function handleStatusMapper(status: string) {
 		["Pendente", "Em análise"],
 		["Cancelada", "Cancelado"],
 	]);
-		return statusMap.get(status) ?? status
+	return statusMap.get(status) ?? status
 }
