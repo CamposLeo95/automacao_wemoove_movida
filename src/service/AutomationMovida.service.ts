@@ -154,47 +154,33 @@ export class AutomationMovida {
 async getStatus() {
   await setTimeout(10000);
   await this.insertToken();
-  await this.page.goto(`${URL_MOVIDA_STATUS}/relatorios/pedidos`, { 
+  await this.page.goto(`${URL_MOVIDA_STATUS}/relatorios/pedidos`, {
     waitUntil: 'networkidle2',
     timeout: 60_000
   });
 	await setTimeout(30000);
-	const clientRows = await this.page.evaluate(() => {
+
+	const firstRow = await this.page.evaluate(() => {
 		const table = document.querySelector("movida-table")?.shadowRoot;
-		if (!table) return [];
-		const getText = (row: number, col: number) =>
-			table.querySelector(`tbody.table__body tr:nth-child(${row}) td:nth-child(${col})`)
+		if (!table) return null;
+		const getText = (col: number) =>
+			table.querySelector(`tbody.table__body tr:nth-child(1) td:nth-child(${col})`)
 				?.textContent?.trim() || null;
-		return [1, 2, 3].map(row => ({
-			data_criacao:   getText(row, 2),
-			status_reserva: getText(row, 4),
-			clienteOnSite:  getText(row, 13)
-		}));
+		return {
+			status_reserva: getText(4),
+			clienteOnSite:  getText(13)
+		};
 	});
 
-	console.log("Linhas lidas:", clientRows.map(r => r.clienteOnSite));
+	console.log("Primeira linha lida:", firstRow?.clienteOnSite);
 
-	const matchedRow = clientRows.find(
-		row => row.clienteOnSite?.toLowerCase().trim() === this.client.getName().toLowerCase().trim()
-	);
+	const approved_movida = handleStatusMapper(firstRow?.status_reserva ?? "") || "";
+	console.log(`📋 Status: ${approved_movida}`);
 
-	let clientSendToAPI: clientSendToAPIDTO;
-
-	if (matchedRow) {
-		const approved_movida = handleStatusMapper(matchedRow.status_reserva ?? "") || "";
-		console.log(`✅ Cliente encontrado na tabela: ${matchedRow.clienteOnSite}`);
-		console.log(`📋 Status: ${approved_movida}`);
-		clientSendToAPI = {
-			client_id: this.client.getId(),
-			approved_movida
-		};
-	} else {
-		console.log(`❌ Cliente "${this.client.getName()}" não encontrado nas 3 primeiras linhas`);
-		clientSendToAPI = {
-			client_id: this.client.getId(),
-			approved_movida: "Bloqueado"
-		};
-	}
+	const clientSendToAPI: clientSendToAPIDTO = {
+		client_id: this.client.getId(),
+		approved_movida
+	};
 
 	await sendMessageToAPI(clientSendToAPI);
 	}
