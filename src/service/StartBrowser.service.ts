@@ -13,8 +13,9 @@ export class StartBrowser {
     const browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      // SITE DE PROXY DECODO - https://dashboard.decodo.com/residential-proxies/proxy-setup
       args: [
-        ...(PROXY_URL ? [`--proxy-server=${PROXY_URL}`] : []),
+        // ...(PROXY_URL ? [`--proxy-server=${PROXY_URL}`] : []),
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -32,6 +33,32 @@ export class StartBrowser {
     if (PROXY_USER && PROXY_PASS) {
       await page.authenticate({ username: PROXY_USER, password: PROXY_PASS });
     }
+
+    // Bloqueia recursos desnecessários para economizar banda do proxy
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const type = req.resourceType();
+      const url  = req.url();
+      const bloqueado =
+        type === 'image'      ||
+        type === 'media'      ||
+        type === 'font'       ||
+        type === 'stylesheet' ||
+        url.includes('youtube.com')        ||
+        url.includes('googletagmanager')   ||
+        url.includes('google-analytics')   ||
+        url.includes('analytics.google')   ||
+        url.includes('doubleclick.net')    ||
+        url.includes('facebook.net')       ||
+        url.includes('facebook.com')       ||
+        url.includes('clarity.ms')         ||
+        url.includes('securiti.ai');
+      if (bloqueado) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
 
     await page.evaluateOnNewDocument(() => {
       Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
