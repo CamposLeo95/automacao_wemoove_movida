@@ -94,13 +94,20 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await buttonSend.evaluate(el => el.scrollIntoView({ block: 'center' }));
-			await buttonSend.click({delay: 3000});
+			await buttonSend.click();
 			console.log("Botao clicado ")
-			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
-			await setTimeout(20000)
-			const text = await this.page.$eval('.swal2-title', el => el.textContent || '');
+			await this.page.waitForSelector('.swal2-popup', { timeout: 30000 }).catch(() => null);
+			await setTimeout(5000)
+			const popupExists = await this.page.$('.swal2-title') !== null;
+			if (!popupExists) {
+				await this.page.screenshot({ path: 'debug-sem-popup.png', fullPage: true });
+				console.log("⚠️ Popup não encontrado — screenshot salvo em debug-sem-popup.png");
+			}
+			// const text = popupExists
+			// 	? await this.page.$eval('.swal2-title', el => el.textContent || '')
+			// 	: 'Popup não apareceu';
 
-			console.log("Texto retorno: ", text)
+			// console.log("Texto retorno: ", text)
 			// if (text.includes('Erro ao enviar contato')) {
 			// 	await setTimeout(5000)
 			// 	console.log("Erro 1")
