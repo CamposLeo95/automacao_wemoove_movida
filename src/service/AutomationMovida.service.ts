@@ -94,7 +94,7 @@ export class AutomationMovida {
 				throw new Error("❌ Erro ao buscar o campo CPF!");
 			}
 			await buttonSend.evaluate(el => el.scrollIntoView({ block: 'center' }));
-			await buttonSend.click();
+			await buttonSend.click({delay: 3000});
 			console.log("Botao clicado ")
 			await this.page.waitForSelector('.swal2-popup', { timeout: 5000 }).catch(() => null);
 			await setTimeout(20000)

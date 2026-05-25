@@ -4,12 +4,17 @@ import type { Browser } from "puppeteer";
 
 puppeteer.use(StealthPlugin());
 
+const PROXY_URL  = process.env.PROXY_URL;
+const PROXY_USER = process.env.PROXY_USER;
+const PROXY_PASS = process.env.PROXY_PASS;
+
 export class StartBrowser {
   static async launchBrowser(): Promise<Browser> {
     const browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: [
+        ...(PROXY_URL ? [`--proxy-server=${PROXY_URL}`] : []),
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -24,10 +29,13 @@ export class StartBrowser {
 
     const page = await browser.newPage();
 
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-await page.evaluateOnNewDocument(() => {
-  Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-});
+    if (PROXY_USER && PROXY_PASS) {
+      await page.authenticate({ username: PROXY_USER, password: PROXY_PASS });
+    }
+
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+    });
 
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
