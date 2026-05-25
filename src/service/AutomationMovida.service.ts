@@ -175,7 +175,7 @@ async getStatus() {
 	console.log("Linhas lidas:", clientRows.map(r => r.clienteOnSite));
 
 	const matchedRow = clientRows.find(
-		row => row.clienteOnSite === this.client.getName()
+		row => row.clienteOnSite?.toLowerCase().trim() === this.client.getName().toLowerCase().trim()
 	);
 
 	let clientSendToAPI: clientSendToAPIDTO;
