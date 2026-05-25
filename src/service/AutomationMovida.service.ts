@@ -121,7 +121,7 @@ export class AutomationMovida {
 			await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
 			return
 		} catch (error) {
-			console.log("Erro 2")
+			console.log("Erro interno: " + error)
 			const clientSendToAPI: clientSendToAPIDTO = {
 					client_id: this.client.getId(),
 					approved_movida: "Bloqueado",
