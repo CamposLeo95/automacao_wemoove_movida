@@ -103,23 +103,23 @@ export class AutomationMovida {
 				await this.page.screenshot({ path: 'debug-sem-popup.png', fullPage: true });
 				console.log("⚠️ Popup não encontrado — screenshot salvo em debug-sem-popup.png");
 			}
-			// const text = popupExists
-			// 	? await this.page.$eval('.swal2-title', el => el.textContent || '')
-			// 	: 'Popup não apareceu';
+			const text = popupExists
+				? await this.page.$eval('.swal2-title', el => el.textContent || '')
+				: 'Popup não apareceu';
 
-			// console.log("Texto retorno: ", text)
-			// if (text.includes('Erro ao enviar contato')) {
-			// 	await setTimeout(5000)
-			// 	console.log("Erro 1")
-			// 	const clientSendToAPI: clientSendToAPIDTO = {
-			// 		client_id: this.client.getId(),
-			// 		approved_movida: "Bloqueado",
-			// 	};
-			// 	await sendMessageToAPI(clientSendToAPI);
-			// 	console.log('❌ Erro detectado');
-			// 	await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
-			// 	return
-			// } 
+			console.log("Texto retorno: ", text)
+			if (text.includes('Erro ao enviar contato')) {
+				await setTimeout(5000)
+				console.log("Erro 1")
+				const clientSendToAPI: clientSendToAPIDTO = {
+					client_id: this.client.getId(),
+					approved_movida: "Bloqueado",
+				};
+				await sendMessageToAPI(clientSendToAPI);
+				console.log('❌ Erro detectado');
+				await this.page.goto(`${"https://www.movidacarroporassinatura.com.br/lp/carro-por-assinatura/"}`, { waitUntil: 'networkidle2' });
+				return
+			} 
 			console.log("🔄️ Fazendo a solicitacao...")
 			await setTimeout(120000)
 			console.log("➡️ Navegando para relatorios...")
