@@ -15,7 +15,7 @@ export class StartBrowser {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       // SITE DE PROXY DECODO - https://dashboard.decodo.com/residential-proxies/proxy-setup
       args: [
-        // ...(PROXY_URL ? [`--proxy-server=${PROXY_URL}`] : []),
+        ...(PROXY_URL ? [`--proxy-server=${PROXY_URL}`] : []),
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
